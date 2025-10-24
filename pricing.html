@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - GoCab</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #ffcc00;
+            --secondary-color: #212529;
+            --accent-color: #ffffff;
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: var(--secondary-color) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .page-header {
+            background: #000000;
+            padding: 8rem 0 4rem;
+            color: #ffcc00;
+        }
+        
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .pricing-card.featured {
+            border: 3px solid var(--primary-color);
+            transform: scale(1.05);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 5px 40px;
+            font-weight: 600;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+        }
+        
+        .pricing-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .pricing-period {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .pricing-features i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .btn-pricing {
+            background-color: var(--primary-color);
+            border: none;
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pricing:hover {
+            background-color: #e6b800;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .comparison-table { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        /* Mobile scroll wrapper */
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-scroll table { min-width: 640px; }
+        @media (max-width: 768px) {
+            .comparison-table th, .comparison-table td { padding: .75rem 1rem; }
+            .comparison-table th { font-size: .95rem; }
+            .comparison-table td { font-size: .95rem; white-space: nowrap; }
+        }
+        /* Optional: Improve hover on touch */
+        @media (max-width: 480px) {
+            .comparison-table td, .comparison-table th { font-size: .9rem; }
+        }
+        
+        .comparison-table th {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 1.5rem;
+        }
+        
+        .comparison-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer h5 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+            
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">GoCab</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="book.html">Book Cab</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="pricing.html">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1>Our Pricing Plans</h1>
+                    <p class="lead">Choose the perfect plan for your transportation needs. Transparent pricing with no hidden charges.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Choose Your Plan</h2>
+            <p class="section-subtitle">Flexible pricing options to suit every budget and requirement</p>
+            
+            <div class="row g-4">
+                <!-- City Rides -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card">
+                        <div class="pricing-icon">
+                            <i class="fas fa-city"></i>
+                        </div>
+                        <h3 class="pricing-title">City Rides</h3>
+                        <div class="pricing-price">₹15</div>
+                        <div class="pricing-period">per km</div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Local city transportation</li>
+                            <li><i class="fas fa-check"></i> 24/7 availability</li>
+                            <li><i class="fas fa-check"></i> Professional drivers</li>
+                            <li><i class="fas fa-check"></i> Clean & safe vehicles</li>
+                            <li><i class="fas fa-check"></i> Real-time tracking</li>
+                            <li><i class="fas fa-check"></i> Multiple payment options</li>
+                        </ul>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Outstation Trips -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">Most Popular</div>
+                        <div class="pricing-icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <h3 class="pricing-title">Outstation Trips</h3>
+                        <div class="pricing-price">₹12</div>
+                        <div class="pricing-period">per km</div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Long-distance travel</li>
+                            <li><i class="fas fa-check"></i> Comfortable vehicles</li>
+                            <li><i class="fas fa-check"></i> Experienced drivers</li>
+                            <li><i class="fas fa-check"></i> Flexible scheduling</li>
+                            <li><i class="fas fa-check"></i> Break stops included</li>
+                            <li><i class="fas fa-check"></i> GPS navigation</li>
+                        </ul>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Airport Transfers -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card">
+                        <div class="pricing-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <h3 class="pricing-title">Airport Transfers</h3>
+                        <div class="pricing-price">₹600</div>
+                        <div class="pricing-period">flat rate</div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Airport pickup/drop</li>
+                            <li><i class="fas fa-check"></i> Flight monitoring</li>
+                            <li><i class="fas fa-check"></i> Luggage assistance</li>
+                            <li><i class="fas fa-check"></i> Meet & greet service</li>
+                            <li><i class="fas fa-check"></i> Waiting time included</li>
+                            <li><i class="fas fa-check"></i> Premium vehicles</li>
+                        </ul>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Services -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title">Additional Services</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="pricing-card">
+                        <div class="pricing-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>Hourly Rental</h4>
+                        <div class="pricing-price">₹300</div>
+                        <div class="pricing-period">per hour</div>
+                        <p>Perfect for city tours, business meetings, or special events.</p>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="pricing-card">
+                        <div class="pricing-icon">
+                            <i class="fas fa-baby"></i>
+                        </div>
+                        <h4>Child Seat</h4>
+                        <div class="pricing-price">₹100</div>
+                        <div class="pricing-period">per trip</div>
+                        <p>Safe and comfortable child seats for your little ones.</p>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="pricing-card">
+                        <div class="pricing-icon">
+                            <i class="fas fa-wheelchair"></i>
+                        </div>
+                        <h4>Accessible Vehicle</h4>
+                        <div class="pricing-price">₹300</div>
+                        <div class="pricing-period">base fare</div>
+                        <p>Wheelchair accessible vehicles with trained drivers.</p>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="pricing-card">
+                        <div class="pricing-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h4>Special Occasions</h4>
+                        <div class="pricing-price">₹1000</div>
+                        <div class="pricing-period">base fare</div>
+                        <p>Luxury vehicles for weddings, proms, and special events.</p>
+                        <a href="book.html" class="btn btn-pricing">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Comparison -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Pricing Comparison</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="comparison-table">
+-                        <table class="table table-hover mb-0">
++                        <div class="table-scroll">
++                            <table class="table table-hover mb-0">
+                                 <thead>
+                                     <tr>
+                                         <th>Service</th>
+                                         <th>Base Fare</th>
+                                         <th>Per Km</th>
+                                         <th>Per Minute</th>
+                                         <th>Features</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                     <tr>
+                                         <td><strong>City Rides</strong></td>
+                                         <td>₹75.00</td>
+                                         <td>₹15.00</td>
+                                         <td>₹2.00</td>
+                                         <td>Standard service</td>
+                                     </tr>
+                                     <tr>
+                                         <td><strong>Outstation</strong></td>
+                                         <td>₹100.00</td>
+                                         <td>₹12.00</td>
+                                         <td>₹2.00</td>
+                                         <td>Long distance</td>
+                                     </tr>
+                                     <tr>
+                                         <td><strong>Airport Transfer</strong></td>
+                                         <td>₹600.00</td>
+                                         <td>Included</td>
+                                         <td>Included</td>
+                                         <td>Flat rate</td>
+                                     </tr>
+                                     <tr>
+                                         <td><strong>Hourly Rental</strong></td>
+                                         <td>₹300.00</td>
+                                         <td>Included</td>
+                                         <td>Included</td>
+                                         <td>Per hour basis</td>
+                                     </tr>
+                                 </tbody>
+-                        </table>
++                            </table>
++                        </div>
+                     </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title">Ready to Book Your Ride?</h2>
+                    <p class="lead mb-4">Choose from our flexible pricing options and book your ride today. No hidden charges, just transparent pricing.</p>
+                    <a href="book.html" class="btn btn-pricing" style="width: auto; padding: 15px 40px;">
+                        <i class="fas fa-car me-2"></i>Book Your Cab Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5>GoCab</h5>
+                    <p>Your trusted partner for safe, reliable, and affordable transportation services. Book your ride anytime, anywhere.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="book.html" class="text-light text-decoration-none">Book Cab</a></li>
+                        <li><a href="pricing.html" class="text-light text-decoration-none">Pricing</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">About</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Contact Info</h5>
+                    <p><i class="fas fa-phone me-2"></i> (+91-999999999)</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@gocab.com</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Main St, City, State 12345</p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Service Hours</h5>
+                    <p>24/7 Available</p>
+                    <p>Emergency Service</p>
+                    <p>Airport Transfers</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>&copy; 2024 GoCab. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
