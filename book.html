@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Cab - GoCab</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -171,6 +172,8 @@
         .calc-output { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-top:.5rem; }
         .calc-output .badge { font-size: .95rem; padding:.5rem .75rem; }
         .calc-output .price { font-weight:600; }
+
+        /* Ticket Styles (reverted) */
         .ticket-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:1050; }
         .ticket-card { background:#fff; width:min(720px, 92vw); border-radius:12px; box-shadow:0 8px 28px rgba(0,0,0,.18); overflow:hidden; }
         .ticket-header { background:linear-gradient(135deg,#0d6efd,#6610f2); color:#fff; padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; }
@@ -180,14 +183,16 @@
         .ticket-grid { display:grid; grid-template-columns: 1fr 1fr; gap:1rem; }
         .ticket-row { display:flex; justify-content:space-between; border-bottom:1px dashed #dee2e6; padding:.5rem 0; }
         .ticket-row:last-child { border-bottom: none; }
-        .qr-box { display:grid; place-items:center; }
-        .qr-box canvas { width:120px !important; height:120px !important; }
+        .qr-box { display:grid; place-items:center; padding:0.5rem; margin-top:0.25rem; }
+        .qr-box canvas, .qr-box img { width:160px !important; height:160px !important; }
+        .qr-status { margin-top:0.5rem; font-weight:600; display:flex; align-items:center; gap:.5rem; }
         .ticket-footer { background:#f8f9fa; padding:.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center; }
-        .close-ticket { border:none; background:transparent; color:#0d6efd; font-weight:600; }
+        .close-ticket { border:none; background:transparent; color:#0d6efd; font-weight:600; padding:.5rem 1rem; }
         @media (max-width: 768px) {
             .ticket-grid { grid-template-columns: 1fr; }
             .ticket-header { padding:.75rem 1rem; }
             .ticket-body { padding:1rem; }
+            .ticket-card { width:96vw; }
         }
         </style>
 </head>
@@ -252,6 +257,7 @@
                                             <option value="">Select pickup state</option>
                                         </select>
                                         <div class="invalid-feedback">Please select a pickup state.</div>
+                                        <small id="pickupHelp" class="form-text text-muted">Select pickup state</small>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="dropState" class="form-label">
@@ -261,20 +267,7 @@
                                             <option value="">Select drop state</option>
                                         </select>
                                         <div class="invalid-feedback">Please select a drop state.</div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <div class="p-3 bg-light rounded border">
-                                            <div class="d-flex align-items-center"><i class="fas fa-ruler-combined me-2"></i><strong>Estimated Distance:</strong></div>
-                                            <div id="distanceDisplay" class="mt-2">— km</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="p-3 bg-light rounded border">
-                                            <div class="d-flex align-items-center"><i class="fas fa-rupee-sign me-2"></i><strong>Estimated Price:</strong></div>
-                                            <div id="priceDisplay" class="mt-2">₹ —</div>
-                                        </div>
+                                        <small id="dropHelp" class="form-text text-muted">Select drop state</small>
                                     </div>
                                 </div>
                             </div>
@@ -336,11 +329,12 @@
                                         </label>
                                         <select class="form-control" id="cabType" required>
                                             <option value="">Select cab type</option>
-                                            <option value="bike">Bike - Solo (1 seat)</option>
-                                            <option value="mini">Mini - Economy (4 seats)</option>
-                                            <option value="sedan">Sedan - Comfort (4 seats)</option>
-                                            <option value="suv">SUV - Premium (6-7 seats)</option>
+                                            <option value="bike">Bike - Solo (1 seat) — ₹8/km</option>
+                                            <option value="mini">Mini - Economy (4 seats) — ₹12/km</option>
+                                            <option value="sedan">Sedan - Comfort (4 seats) — ₹15/km</option>
+                                            <option value="suv">SUV - Premium (6-7 seats) — ₹20/km</option>
                                         </select>
+                                        <small id="cabRateInfo" class="form-text text-muted">Select cab type</small>
                                         <div class="invalid-feedback">Please select a cab type.</div>
                                     </div>
                                 </div>
@@ -426,9 +420,9 @@
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5>Contact Info</h5>
-                    <p><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</p>
+                    <p><i class="fas fa-phone me-2"></i> (+91-999999999)</p>
                     <p><i class="fas fa-envelope me-2"></i> info@gocab.com</p>
-                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Main St, City, State 12345</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> Rajkot, India</p>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5>Service Hours</h5>
@@ -440,7 +434,7 @@
             <hr class="my-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <p>&copy; 2024 GoCab. All rights reserved.</p>
+                    <p>&copy; 2025 GoCab India. All rights reserved. | Made with ❤️ in India</p>
                 </div>
             </div>
         </div>
@@ -480,9 +474,11 @@
                         <div class="ticket-row"><span>Taxes & Fees</span><span>₹<span id="tFees">0</span></span></div>
                         <div class="ticket-row"><span>Total Price</span><span class="fw-bold">₹<span id="tTotal">0</span></span></div>
                         <div class="qr-box">
-                            <canvas id="ticketQR"></canvas>
-                            <small class="text-muted mt-2">Scan for booking details</small>
+                            <div id="ticketQR" aria-label="Booking QR code" role="img"></div>
+                            <div id="qrSpinner" class="spinner-border text-primary mt-2" role="status" aria-hidden="true" style="display:none;"></div>
+                            <div id="qrStatus" class="qr-status text-muted" aria-live="polite"><i class="fas fa-hourglass-half"></i> Generating QR…</div>
                         </div>
+                        <small class="text-muted mt-2">Show this QR code to your driver</small>
                     </div>
                 </div>
             </div>
@@ -495,6 +491,7 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
     (function(){
@@ -513,6 +510,7 @@
         const distanceKmEl = document.getElementById('distanceKm');
         const baseFareEl = document.getElementById('baseFare');
         const totalPriceEl = document.getElementById('totalPrice');
+        const FILTER_CACHE = new Map();
 
         const form = document.getElementById('bikeCabForm');
         const passengerName = document.getElementById('passengerName');
@@ -536,7 +534,12 @@
         function filterOptions(activeSelect, otherSelect){
             const selected = activeSelect.value;
             const otherValue = otherSelect.value;
-            const available = STATES.filter(s => s !== selected);
+            const key = activeSelect.id + ':' + selected;
+            let available = FILTER_CACHE.get(key);
+            if (!available) {
+                available = STATES.filter(s => s !== selected);
+                FILTER_CACHE.set(key, available);
+            }
             otherSelect.innerHTML = '<option value="">'+ (otherSelect.id==='pickupState'?'Select pickup state':'Select drop state') +'</option>';
             available.forEach(s=>{
                 const opt = document.createElement('option');
@@ -545,6 +548,15 @@
             if (otherValue && otherValue !== selected && available.includes(otherValue)) {
                 otherSelect.value = otherValue;
             }
+            const helpId = otherSelect.id==='pickupState'?'pickupHelp':'dropHelp';
+            const helpEl = document.getElementById(helpId);
+            if (selected) {
+                helpEl.textContent = 'Selected ' + (activeSelect.id==='pickupState'?'pickup':'drop') + ' "' + selected + '" excluded from ' + (otherSelect.id==='pickupState'?'pickup':'drop') + ' options';
+            } else {
+                helpEl.textContent = otherSelect.id==='pickupState'?'Select pickup state':'Select drop state';
+            }
+            otherSelect.classList.add('select-updated');
+            setTimeout(()=> otherSelect.classList.remove('select-updated'), 300);
         }
         pickup.addEventListener('change', ()=>{
             filterOptions(pickup, drop);
@@ -579,7 +591,7 @@
             baseFareEl.textContent = base;
             totalPriceEl.textContent = total;
         }
-        cabType.addEventListener('change', calculate);
+        cabType.addEventListener('change', ()=>{ updateCabRateInfo(); calculate(); });
 
         // Validation helpers
         function setValidity(el, valid){
@@ -591,7 +603,9 @@
             const contactOk = /^\d{10}$/.test(contactNumber.value.trim());
             const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress.value.trim());
             const pickupOk = !!pickup.value;
-            const dropOk = !!drop.value;
+            const dropOkRaw = !!drop.value;
+            const locDifferent = pickup.value && drop.value ? pickup.value !== drop.value : true;
+            const dropOk = dropOkRaw && locDifferent;
             const dateOk = !!tripDate.value;
             const timeOk = !!tripTime.value;
             const cabOk = !!cabType.value;
@@ -600,31 +614,32 @@
             setValidity(emailAddress, emailOk);
             setValidity(pickup, pickupOk);
             setValidity(drop, dropOk);
+            if (!locDifferent) {
+                const dropHelp = document.getElementById('dropHelp');
+                dropHelp.textContent = 'Pickup and drop cannot be the same.';
+            }
             setValidity(tripDate, dateOk);
             setValidity(tripTime, timeOk);
             setValidity(cabType, cabOk);
             return nameOk && contactOk && emailOk && pickupOk && dropOk && dateOk && timeOk && cabOk;
         }
 
-        // QR generation: tiny inline generator using canvas (no external lib)
-        function simpleHash(str){
-            let h = 0; for (let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i))>>>0; }
-            return h;
-        }
-        function drawPseudoQR(canvas, text){
-            const ctx = canvas.getContext('2d');
-            const size = 120; canvas.width = size; canvas.height = size;
-            ctx.fillStyle = '#fff'; ctx.fillRect(0,0,size,size);
-            ctx.fillStyle = '#000';
-            let seed = simpleHash(text);
-            function rnd(n){ seed ^= (seed<<13); seed ^= (seed>>>17); seed ^= (seed<<5); return (seed>>>0)%n; }
-            for(let y=0;y<24;y++){
-                for(let x=0;x<24;x++){
-                    if(((x*y + rnd(997))%5)===0){
-                        ctx.fillRect(x*5+2,y*5+2,3,3);
-                    }
-                }
-            }
+        // QR generation using QRCode.js (reverted UI feedback)
+        function generateQR(container, text){
+            container.innerHTML = '';
+            const spinner = document.getElementById('qrSpinner');
+            const status = document.getElementById('qrStatus');
+            spinner.style.display = 'inline-block';
+            status.classList.remove('text-success');
+            status.classList.add('text-muted');
+            status.innerHTML = '<i class="fas fa-hourglass-half"></i> Generating QR…';
+            setTimeout(()=>{
+                new QRCode(container, { text, width:160, height:160, correctLevel: QRCode.CorrectLevel.M });
+                spinner.style.display = 'none';
+                status.classList.remove('text-muted');
+                status.classList.add('text-success');
+                status.innerHTML = '<i class="fas fa-check-circle"></i> QR Ready';
+            }, 500);
         }
 
         function showTicket(){
@@ -642,11 +657,24 @@
             document.getElementById('tBase').textContent = baseFareEl.textContent;
             const fees = FIXED_FEES; document.getElementById('tFees').textContent = String(fees);
             document.getElementById('tTotal').textContent = totalPriceEl.textContent;
-            const canvas = document.getElementById('ticketQR');
-            drawPseudoQR(canvas, ref + '|' + passengerName.value + '|' + pickup.value + '|' + drop.value + '|' + totalPriceEl.textContent);
+            const qrContainer = document.getElementById('ticketQR');
+            const content = JSON.stringify({ 
+                ref, 
+                name: passengerName.value, 
+                contact: contactNumber.value, 
+                pickup: pickup.value, 
+                drop: drop.value, 
+                total: totalPriceEl.textContent,
+                timestamp: new Date().toISOString()
+            });
+            
+            generateQR(qrContainer, content);
+            
             const overlay = document.getElementById('ticketOverlay');
             overlay.style.display = 'flex';
             overlay.setAttribute('aria-hidden','false');
+            overlay.setAttribute('aria-busy','true');
+            setTimeout(()=> overlay.setAttribute('aria-busy','false'), 600);
         }
         document.getElementById('closeTicket').addEventListener('click', ()=>{
             const overlay = document.getElementById('ticketOverlay');
@@ -667,7 +695,15 @@
             showTicket();
         });
 
+        function updateCabRateInfo(){
+            const rate = RATES[cabType.value] || 0;
+            const info = document.getElementById('cabRateInfo');
+            info.textContent = rate ? ('Rate: ₹' + rate + '/km') : 'Select cab type';
+        }
+        cabType.addEventListener('change', ()=>{ updateCabRateInfo(); calculate(); });
+
         // Initialize defaults
+        updateCabRateInfo();
         calculate();
     })();
     </script>

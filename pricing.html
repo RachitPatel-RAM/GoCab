@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pricing - GoCab</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -239,6 +240,70 @@
                 transform: translateY(-10px);
             }
         }
+        
+        /* Comparison Table UX Enhancements */
+        .comparison-table { position: relative; }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .comparison-table table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .comparison-table thead th { position: sticky; top: 0; background: #fffbea; z-index: 2; }
+        .comparison-table tbody td, .comparison-table thead th { transition: background-color .25s ease, transform .15s ease, box-shadow .25s ease; }
+        .comparison-table tbody tr { transition: background-color .25s ease; }
+        .comparison-table tbody tr:hover { background: rgba(255, 204, 0, 0.10); }
+        .comparison-table tbody td:hover { background: rgba(255, 204, 0, 0.18); transform: translateY(-1px); }
+        .comparison-table .plan-row.selected { background: rgba(40, 167, 69, 0.10); box-shadow: inset 0 0 0 2px rgba(40,167,69,0.3); }
+        .comparison-table .plan-row.selected td { animation: pulseGlow 600ms ease-in-out; }
+        .comparison-table .plan-row.recommended td:first-child { position: relative; }
+        .comparison-table .badge-recommended { display: inline-block; margin-left: .5rem; font-size: .75rem; padding: .25rem .5rem; border-radius: 999px; background: linear-gradient(45deg, #ffd54f, #ffcc00); color: #212529; font-weight: 600; }
+        .comparison-table .feature-pill { display: inline-block; background: #f1f3f5; color: #343a40; border-radius: 999px; padding: .25rem .6rem; font-size: .85rem; margin-right: .35rem; }
+        .comparison-table .feature-pill.best { background: #e8f5e9; color: #2e7d32; }
+        .comparison-table .feature-pill.premium { background: #e3f2fd; color: #1565c0; }
+        .comparison-table .feature-pill.flat { background: #fff3e0; color: #ef6c00; }
+        .comparison-table .feature-pill.hourly { background: #ede7f6; color: #5e35b1; }
+        
+        /* Micro-interactions and focus states */
+        .comparison-table .plan-row { cursor: pointer; }
+        .comparison-table .plan-row:focus { outline: 3px solid rgba(21, 101, 192, .35); outline-offset: 2px; }
+        .comparison-table .plan-row[aria-selected="true"] { background: rgba(21, 101, 192, 0.10); }
+        
+        /* Loading animation */
+        .comparison-table.loading::before {
+            content: "";
+            position: absolute; inset: 0; border-radius: 12px; background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.0) 100%);
+            animation: skeletonShimmer 1.2s infinite;
+            pointer-events: none;
+        }
+        @keyframes skeletonShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: inset 0 0 0 0 rgba(40,167,69,0.0); }
+            50% { box-shadow: inset 0 0 0 4px rgba(40,167,69,0.25); }
+            100% { box-shadow: inset 0 0 0 0 rgba(40,167,69,0.0); }
+        }
+        
+        /* Typography hierarchy & spacing */
+        .comparison-table thead th { font-weight: 700; font-size: 1.05rem; color: var(--secondary-color); }
+        .comparison-table tbody td { font-size: 1rem; }
+        .comparison-table tbody td strong { font-weight: 600; color: var(--secondary-color); }
+        .comparison-table .cell-muted { color: #6c757d; }
+        .comparison-table .cell-accent { color: var(--primary-color); font-weight: 600; }
+        .comparison-table .cell-good { color: #2e7d32; font-weight: 600; }
+        .comparison-table .cell-info { color: #1565c0; font-weight: 600; }
+        
+        /* Responsive tweaks */
+        @media (max-width: 992px) {
+            .comparison-table thead th, .comparison-table tbody td { padding: .75rem .9rem; }
+        }
+        @media (max-width: 576px) {
+            .comparison-table thead th, .comparison-table tbody td { padding: .6rem .7rem; font-size: .95rem; }
+            .comparison-table .badge-recommended { display: block; margin-top: .35rem; }
+        }
+        
+        /* Selection details bar */
+        .plan-details { display: none; margin-top: 1rem; background: #f8f9fa; border-radius: 10px; padding: .9rem 1rem; border: 1px solid #e9ecef; }
+        .plan-details.show { display: block; animation: fadeSlideIn .25s ease; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -309,7 +374,8 @@
                         </ul>
                         <a href="book.html" class="btn btn-pricing">Book Now</a>
                     </div>
-                </div>
+                         <div id="planDetails" class="plan-details" aria-live="polite" role="status"></div>
+                     </div>
 
                 <!-- Outstation Trips -->
                 <div class="col-lg-4 col-md-6">
@@ -421,52 +487,51 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <div class="comparison-table">
--                        <table class="table table-hover mb-0">
-+                        <div class="table-scroll">
-+                            <table class="table table-hover mb-0">
-                                 <thead>
-                                     <tr>
-                                         <th>Service</th>
-                                         <th>Base Fare</th>
-                                         <th>Per Km</th>
-                                         <th>Per Minute</th>
-                                         <th>Features</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody>
-                                     <tr>
-                                         <td><strong>City Rides</strong></td>
-                                         <td>₹75.00</td>
-                                         <td>₹15.00</td>
-                                         <td>₹2.00</td>
-                                         <td>Standard service</td>
-                                     </tr>
-                                     <tr>
-                                         <td><strong>Outstation</strong></td>
-                                         <td>₹100.00</td>
-                                         <td>₹12.00</td>
-                                         <td>₹2.00</td>
-                                         <td>Long distance</td>
-                                     </tr>
-                                     <tr>
-                                         <td><strong>Airport Transfer</strong></td>
-                                         <td>₹600.00</td>
-                                         <td>Included</td>
-                                         <td>Included</td>
-                                         <td>Flat rate</td>
-                                     </tr>
-                                     <tr>
-                                         <td><strong>Hourly Rental</strong></td>
-                                         <td>₹300.00</td>
-                                         <td>Included</td>
-                                         <td>Included</td>
-                                         <td>Per hour basis</td>
-                                     </tr>
-                                 </tbody>
--                        </table>
-+                            </table>
-+                        </div>
-                     </div>
+                        <div class="table-scroll">
+                            <table class="table table-hover mb-0" role="table" aria-label="Pricing comparison">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Service</th>
+                                        <th scope="col">Base Fare</th>
+                                        <th scope="col">Per Km</th>
+                                        <th scope="col">Per Minute</th>
+                                        <th scope="col">Features</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="plan-row" tabindex="0" aria-selected="false">
+                                        <td><strong>City Rides</strong></td>
+                                        <td>₹75.00</td>
+                                        <td>₹15.00</td>
+                                        <td>₹2.00</td>
+                                        <td><span class="feature-pill">Standard</span></td>
+                                    </tr>
+                                    <tr class="plan-row recommended" tabindex="0" aria-selected="false">
+                                        <td><strong>Outstation</strong> <span class="badge-recommended" aria-label="Recommended option">Recommended</span></td>
+                                        <td>₹100.00</td>
+                                        <td>₹12.00</td>
+                                        <td>₹2.00</td>
+                                        <td><span class="feature-pill best">Best Value</span> <span class="feature-pill">Long Distance</span></td>
+                                    </tr>
+                                    <tr class="plan-row" tabindex="0" aria-selected="false">
+                                        <td><strong>Airport Transfer</strong></td>
+                                        <td>₹600.00</td>
+                                        <td>Included</td>
+                                        <td>Included</td>
+                                        <td><span class="feature-pill flat">Flat Rate</span></td>
+                                    </tr>
+                                    <tr class="plan-row" tabindex="0" aria-selected="false">
+                                        <td><strong>Hourly Rental</strong></td>
+                                        <td>₹300.00</td>
+                                        <td>Included</td>
+                                        <td>Included</td>
+                                        <td><span class="feature-pill hourly">Per Hour</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="planDetails" class="plan-details" aria-live="polite" role="status"></div>
+                    </div>
 
                 </div>
             </div>
@@ -515,7 +580,7 @@
                     <h5>Contact Info</h5>
                     <p><i class="fas fa-phone me-2"></i> (+91-999999999)</p>
                     <p><i class="fas fa-envelope me-2"></i> info@gocab.com</p>
-                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Main St, City, State 12345</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> Rajkot, India</p>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5>Service Hours</h5>
@@ -527,7 +592,7 @@
             <hr class="my-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <p>&copy; 2024 GoCab. All rights reserved.</p>
+                    <p>&copy; 2025 GoCab India. All rights reserved. | Made with ❤️ in India</p>
                 </div>
             </div>
         </div>
@@ -535,6 +600,49 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    (function(){
+      const comp = document.querySelector('.comparison-table');
+      if (!comp) return;
+      // Loading animation
+      comp.classList.add('loading');
+      setTimeout(()=> comp.classList.remove('loading'), 700);
+
+      const table = comp.querySelector('table');
+      const rows = table.querySelectorAll('tbody tr.plan-row');
+      const details = document.getElementById('planDetails');
+
+      function updateDetails(row){
+        const cells = row.querySelectorAll('td');
+        const service = cells[0].textContent.trim();
+        const base = cells[1].textContent.trim();
+        const perKm = cells[2].textContent.trim();
+        const perMin = cells[3].textContent.trim();
+        details.innerHTML = '<span class="cell-accent">' + service + '</span> • Base ' + base + ' • ' + (perKm === 'Included' ? 'Per km included' : (perKm + ' per km')) + ' • ' + (perMin === 'Included' ? 'Per minute included' : (perMin + ' per minute'));
+        details.classList.add('show');
+      }
+
+      function selectRow(row){
+        rows.forEach(r => { r.classList.remove('selected'); r.setAttribute('aria-selected','false'); });
+        row.classList.add('selected');
+        row.setAttribute('aria-selected','true');
+        updateDetails(row);
+      }
+
+      rows.forEach(row => {
+        row.addEventListener('click', ()=> selectRow(row));
+        row.addEventListener('keydown', (e)=>{
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectRow(row); }
+          if (e.key === 'ArrowDown') { e.preventDefault(); const next = row.nextElementSibling; if (next) next.focus(); }
+          if (e.key === 'ArrowUp') { e.preventDefault(); const prev = row.previousElementSibling; if (prev) prev.focus(); }
+        });
+        row.setAttribute('tabindex', '0');
+      });
+
+      const recommended = comp.querySelector('.plan-row.recommended');
+      if (recommended) selectRow(recommended);
+    })();
+    </script>
 </body>
 </html>
 
